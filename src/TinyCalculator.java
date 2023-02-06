@@ -9,7 +9,7 @@ public class TinyCalculator extends JFrame implements ActionListener  {
     private JPanel jp_buttonArea;//按键区域
     private String []ButtonString={
         "%", "CE", "C", "DEL", // "DEL",
-        "1/x", "x^2", "√￣", "÷",
+        "1/x", "x^2", "√", "÷",
         "7","8","9","×",
         "4","5","6","-",
         "1","2","3","+",
@@ -100,6 +100,14 @@ public class TinyCalculator extends JFrame implements ActionListener  {
             CE();
         }else if(isDEL(button)){
             DEL();
+        }else if(isReciprocal(button)){
+            Reci();
+        }else if(isSQR(button)){
+            SQR();
+        }else if(isROOT(button)){
+            ROOT();
+        }else if(isPM(button)){
+            PM();
         }
     }
 
@@ -146,6 +154,14 @@ public class TinyCalculator extends JFrame implements ActionListener  {
             CE();
         }else if(isDEL(button)){
             DEL();
+        }else if(isReciprocal(button)){
+            Reci();
+        }else if(isSQR(button)){
+            SQR();
+        }else if(isROOT(button)){
+            ROOT();
+        }else if(isPM(button)){
+            PM();
         }
     }
 
@@ -215,7 +231,7 @@ public class TinyCalculator extends JFrame implements ActionListener  {
             return true;
         }else if(button.getText().equals("x^2")){
             return true;
-        }else if(button.getText().equals("√￣")){
+        }else if(button.getText().equals("√")){
             return true;
         }else if(button.getText().equals("+/-")){
             return true;
@@ -252,14 +268,42 @@ public class TinyCalculator extends JFrame implements ActionListener  {
         }
         return false;
     }
-    // Check the button is CE.
+    // Check the button is DEL.
     private boolean isDEL(JButton button){
         if(button.getText().equals("DEL")){
             return true;
         }
         return false;
     }
-
+    // Check the button is Reciprocal.
+    private boolean isReciprocal(JButton button){
+        if(button.getText().equals("1/x")){
+            return true;
+        }
+        return false;
+    }
+    // Check the button is SQR.
+    private boolean isSQR(JButton button){
+        if(button.getText().equals("x^2")){
+            return true;
+        }
+        return false;
+    }
+    // Check the button is ROOT.
+    private boolean isROOT(JButton button){
+        if(button.getText().equals("x^2")){
+            return true;
+        }
+        return false;
+    }
+    // Check the button is PM.
+    private boolean isPM(JButton button){
+        if(button.getText().equals("+/-")){
+            return true;
+        }
+        return false;
+    }
+    
     private String ADD(String _op1, String _op2){
         double op1 = Double.parseDouble(_op1);
         double op2 = Double.parseDouble(_op2);
@@ -322,5 +366,54 @@ public class TinyCalculator extends JFrame implements ActionListener  {
             text2.setText(Current_Operator2);
         }
     }
+
+    private void Reci(){
+        if(CurrentState == "Operator1") {
+            text1.setText("1/("+Current_Operator1+")");
+            Current_Operator1 = DIV("1", Current_Operator1);
+            text2.setText(Current_Operator1);
+        }else if(CurrentState == "Operator2"){
+            text1.setText(Current_Operator1+Current_Opcode+"1/("+Current_Operator2+")");
+            Current_Operator2 = DIV("1", Current_Operator2);
+            text2.setText(Current_Operator2);
+        }
+    }
+    private void SQR(){
+        if(CurrentState == "Operator1") {
+            text1.setText("sqr("+Current_Operator1+")");
+            Current_Operator1 = MUL(Current_Operator1, Current_Operator1);
+            text2.setText(Current_Operator1);
+        }else if(CurrentState == "Operator2"){
+            text1.setText(Current_Operator1+Current_Opcode+"sqr("+Current_Operator2+")");
+            Current_Operator2 = MUL(Current_Operator2, Current_Operator2);
+            text2.setText(Current_Operator2);
+        }
+    }
+    private void ROOT(){
+        String result;
+        DecimalFormat format = new DecimalFormat("0.##########");
+        if(CurrentState == "Operator1") {
+            text1.setText("√("+Current_Operator1+")");
+            result = format.format(Math.sqrt(Double.parseDouble((Current_Operator1))));
+            Current_Operator1 = result;
+            text2.setText(Current_Operator1);
+        }else if(CurrentState == "Operator2"){
+            text1.setText("√("+Current_Operator2+")");
+            result = format.format(Math.sqrt(Double.parseDouble((Current_Operator2))));
+            Current_Operator2 = result;
+            text2.setText(Current_Operator2);
+        }
+    }
+    private void PM(){
+        if(CurrentState == "Operator1") {
+            Current_Operator1 = MUL("-1", Current_Operator1);
+            text2.setText(Current_Operator1);
+        }else if(CurrentState == "Operator2"){
+            Current_Operator2 = MUL("-1", Current_Operator2);;
+            text2.setText(Current_Operator2);
+        }
+    }
+
+
 
 }
