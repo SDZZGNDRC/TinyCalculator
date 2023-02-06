@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.DecimalFormat;
 
 public class TinyCalculator extends JFrame implements ActionListener  {
     // private JTextField content_input;// 输入/输出框
@@ -16,9 +17,10 @@ public class TinyCalculator extends JFrame implements ActionListener  {
     };
     private static final int columns_text = 20;
     private String CurrentState;
-    private String Current_Operator = "";
+    private String Current_Opcode = "";
     private String Current_Operator1 = "";
     private String Current_Operator2 = "";
+    private String Current_Result = "";
     private boolean Operator2_Changed_Flag = false;
     public TinyCalculator() {
         this.setTitle("TinyCalculator");
@@ -31,6 +33,7 @@ public class TinyCalculator extends JFrame implements ActionListener  {
         text1 = new JTextArea(1, columns_text);
         //text1.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT); // 右对齐
         text1.setEditable(false);
+        text1.setFont(new Font("Arial", Font.BOLD, 25));
         text1.setText(""); // 设置显示内容为空
         text2 = new JTextArea(1, columns_text);
         //text2.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT); // 右对齐
@@ -64,6 +67,8 @@ public class TinyCalculator extends JFrame implements ActionListener  {
         Object source = e.getSource();
         if(CurrentState.equals("Operator1")){
             State_Operator1((JButton)source);
+        }else if(CurrentState.equals("Operator2")){
+            State_Operator2((JButton)source);
         }
     }
 
@@ -87,13 +92,28 @@ public class TinyCalculator extends JFrame implements ActionListener  {
             Operator2_Changed_Flag = false; // To specify if the text2 is changed.
             Current_Operator2 = Current_Operator1;
             State_Operator2(button);
+        }else if(isEQUAL(button)){
+            text1.setText(Current_Operator1+"=");
+        }else if(isC(button)){
+            C();
+        }else if(isCE(button)){
+            CE();
+        }else if(isDEL(button)){
+            DEL();
         }
     }
 
     private void State_Operator2(JButton button){
+        String result;
         if(isOperate(button)){
+            if(Operator2_Changed_Flag){
+                result = Compute();
+                Current_Operator1 = result;
+            }
             text1.setText(Current_Operator1+button.getText());
-            Current_Operator = button.getText();
+            text2.setText(Current_Operator1);
+            Current_Opcode = button.getText();
+            Operator2_Changed_Flag = false;
         }else if(isNumDot(button)){
             if(!Operator2_Changed_Flag){ // 未改变
                 Operator2_Changed_Flag = true;
@@ -113,9 +133,40 @@ public class TinyCalculator extends JFrame implements ActionListener  {
                 }
             }
             text2.setText(Current_Operator2);
+        }else if(isEQUAL(button)){
+            result = Compute();
+            text1.setText(Current_Operator1+Current_Opcode+Current_Operator2+button.getText());
+            Current_Operator1 = result;
+            text2.setText(result);
+            CurrentState = "Operator1";
+            Operator2_Changed_Flag = false;
+        }else if(isC(button)){
+            C();
+        }else if(isCE(button)){
+            CE();
+        }else if(isDEL(button)){
+            DEL();
         }
     }
 
+    // Compute func Compute the result according the operator1 and operator2 and opcode.
+    private String Compute(){
+        String result;
+        if(Current_Opcode.equals("+")){
+            result = ADD(Current_Operator1, Current_Operator2);
+        }else if(Current_Opcode.equals("-")){
+            result = SUB(Current_Operator1, Current_Operator2);
+        }else if(Current_Opcode.equals("×")){
+            result = MUL(Current_Operator1, Current_Operator2);
+        }else if(Current_Opcode.equals("÷")){
+            result = DIV(Current_Operator1, Current_Operator2);
+        }else if(Current_Opcode.equals("%")){
+            result = MOD(Current_Operator1, Current_Operator2);
+        }else {
+            result = "ERROR";
+        }
+        return result;
+    }
     // Check the button is Num or dot.
     private boolean isNumDot(JButton button){
         if(button.getText().equals("0")){
@@ -151,7 +202,7 @@ public class TinyCalculator extends JFrame implements ActionListener  {
             return true;
         }else if(button.getText().equals("×")){
             return true;
-        }else if(button.getText().equals("/")){
+        }else if(button.getText().equals("÷")){
             return true;
         }else if(button.getText().equals("%")){
             return true;
@@ -180,15 +231,96 @@ public class TinyCalculator extends JFrame implements ActionListener  {
         }
         return false;
     }
-
-    // Append a string to a JTextArea.
-    private void JTAAppend(JTextArea text, String str){
-        if(text.getText().equals("0") && !str.equals(".")){
-            text.setText(str);
-            return;
+    // Check the button is EQUAL.
+    private boolean isEQUAL(JButton button){
+        if(button.getText().equals("=")){
+            return true;
         }
-        text.setText(text.getText()+str);
+        return false;
+    }
+    // Check the button is CE.
+    private boolean isCE(JButton button){
+        if(button.getText().equals("CE")){
+            return true;
+        }
+        return false;
+    }
+    // Check the button is CE.
+    private boolean isC(JButton button){
+        if(button.getText().equals("C")){
+            return true;
+        }
+        return false;
+    }
+    // Check the button is CE.
+    private boolean isDEL(JButton button){
+        if(button.getText().equals("DEL")){
+            return true;
+        }
+        return false;
+    }
 
+    private String ADD(String _op1, String _op2){
+        double op1 = Double.parseDouble(_op1);
+        double op2 = Double.parseDouble(_op2);
+        DecimalFormat format = new DecimalFormat("0.##########"); // remove trailing zeros from a double
+        return format.format(op1+op2);
+    }
+    private String SUB(String _op1, String _op2){
+        double op1 = Double.parseDouble(_op1);
+        double op2 = Double.parseDouble(_op2);
+        DecimalFormat format = new DecimalFormat("0.##########"); // remove trailing zeros from a double
+        return format.format(op1-op2);
+    }
+    private String MUL(String _op1, String _op2){
+        double op1 = Double.parseDouble(_op1);
+        double op2 = Double.parseDouble(_op2);
+        DecimalFormat format = new DecimalFormat("0.##########"); // remove trailing zeros from a double
+        return format.format(op1*op2);
+    }
+    private String DIV(String _op1, String _op2){
+        double op1 = Double.parseDouble(_op1);
+        double op2 = Double.parseDouble(_op2);
+        DecimalFormat format = new DecimalFormat("0.##########"); // remove trailing zeros from a double
+        return format.format(op1/op2);
+    }
+    private String MOD(String _op1, String _op2){
+        double op1 = Double.parseDouble(_op1);
+        double op2 = Double.parseDouble(_op2);
+        DecimalFormat format = new DecimalFormat("0.##########"); // remove trailing zeros from a double
+        return format.format(op1%op2);
+    }
+    private void C(){
+        CurrentState = "Operator1";
+        Current_Operator1 = "0";
+        Current_Opcode = "";
+        Operator2_Changed_Flag = false;
+        text1.setText("");
+        text2.setText(Current_Operator1);
+    }
+    private void CE(){
+        Current_Operator2 = "0";
+        Operator2_Changed_Flag = false;
+        text2.setText(Current_Operator2);
+    }
+
+    private void DEL(){
+        if(CurrentState=="Operator1"){
+            if(Current_Operator1.length()==1){
+                Current_Operator1 = "0";
+            }else{
+                Current_Operator1 = Current_Operator1.substring(0, Current_Operator1.length()-1);
+            }
+            text2.setText(Current_Operator1);
+        }else if(CurrentState=="Operator2"){
+            if(Current_Operator2.length()==1){
+                Current_Operator2 = "0";
+                Operator2_Changed_Flag = false;
+            }else{
+                Current_Operator2 = Current_Operator2.substring(0, Current_Operator2.length()-1);
+            }
+            text2.setText(Current_Operator2);
+        }
     }
 
 }
