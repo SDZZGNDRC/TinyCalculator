@@ -20,7 +20,6 @@ public class TinyCalculator extends JFrame implements ActionListener  {
     private String Current_Opcode = "";
     private String Current_Operator1 = "";
     private String Current_Operator2 = "";
-    private String Current_Result = "";
     private boolean Operator2_Changed_Flag = false;
     public TinyCalculator() {
         this.setTitle("TinyCalculator");
@@ -225,21 +224,6 @@ public class TinyCalculator extends JFrame implements ActionListener  {
         }
         return false;
     }
-    // Check the button is func.
-    private boolean isFunc(JButton button){
-        if(button.getText().equals("1/x")){
-            return true;
-        }else if(button.getText().equals("x^2")){
-            return true;
-        }else if(button.getText().equals("√")){
-            return true;
-        }else if(button.getText().equals("+/-")){
-            return true;
-        }else if(button.getText().equals("%")){
-            return true;
-        }
-        return false;
-    }
     // Check the button is Dot.
     private boolean isDot(JButton button){
         if(button.getText().equals(".")){
@@ -291,7 +275,7 @@ public class TinyCalculator extends JFrame implements ActionListener  {
     }
     // Check the button is ROOT.
     private boolean isROOT(JButton button){
-        if(button.getText().equals("x^2")){
+        if(button.getText().equals("√")){
             return true;
         }
         return false;

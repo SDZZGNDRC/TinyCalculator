@@ -1,13 +1,14 @@
 import javax.swing.*;
-import java.awt.*;
-
-import com.formdev.flatlaf.intellijthemes.FlatLightFlatIJTheme;
+import com.formdev.flatlaf.intellijthemes.*;
 // import com.formdev.flatlaf.intellijthemes.FlatDarkFlatIJTheme;
-
+// FlatHighContrastIJTheme
+// FlatMaterialDesignDarkIJTheme
+// FlatSolarizedDarkIJTheme
+// FlatSolarizedLightIJTheme
 public class App {
     public static void main(String[] args) throws Exception {
         try {
-            UIManager.setLookAndFeel( new FlatLightFlatIJTheme() );
+            UIManager.setLookAndFeel( new FlatSolarizedLightIJTheme() );
         } catch( Exception ex ) {
             System.err.println( "Failed to initialize LaF" );
         }
